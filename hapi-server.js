@@ -82,6 +82,9 @@ async function init() {
                 description: 'Home page'
             },
             handler: async (request, h) => {
+                if(currentMember == null){
+                    return h.redirect("/log_in") //redirect to the login if you are not logged in
+                }
                 return h.view('index');
             }
         },
@@ -241,7 +244,7 @@ async function init() {
                 }
                 var memberId = currentMember;
                 corn = await knex("commitment").where('memberid', currentMember);
-                return h.view('delete-commitment.hbs', {data: corn});
+                return h.view('update-commitment.hbs', {data: corn});
             }
         },
         {
@@ -252,13 +255,40 @@ async function init() {
             },
             handler: async (request, h) => {
                 var memberId = currentMember;
-                console.log("sampleid" + request.payload.selectedid.toString())
-                await knex('commitment')
-                    .where('commitmentid', request.payload.selectedid .toString())
-                    .del()
-                    .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                if(request.payload.name != undefined){
+                    knex('commitment')
+                        .where("commitmentid", request.payload.commitmentId)
+                        .update("name", request.payload.name)
+                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                }
+                if(request.payload.date != undefined){
+                    knex('commitment')
+                        .where("commitmentid", request.payload.commitmentId)
+                        .update("date", request.payload.date)
+                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                }
+                if(request.payload.start != undefined){
+                    knex('commitment')
+                        .where("commitmentid", request.payload.commitmentId)
+                        .update("start", request.payload.start)
+                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                }
+                if(request.payload.end != undefined){
+                    knex('commitment')
+                        .where("commitmentid", request.payload.commitmentId)
+                        .update("end", request.payload.end)
+                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                }
+                if(request.payload.location != undefined){
+                    knex('commitment')
+                        .where("commitmentid", request.payload.commitmentId)
+                        .update("location", request.payload.location)
+                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                }
+                // location
+
                 corn = await knex("commitment").where('memberid', currentMember);
-                return h.view('delete-commitment.hbs', {data: corn});
+                return h.view('update-commitment.hbs', {data: corn});
             }
         },
         {

@@ -2,13 +2,23 @@
     <h1>Update Commitments</h1>
     <button><a href="/commitments">Back</a></button>
 
-    <h2>Select ID of commitment that needs to be deleted </h2>
+    <h2>Update</h2>
     <form id="add-commitment-form" method="POST">
         <div class="form-group">
-            <label for="selectedid">Selected ID:</label>
-            <input class="btn btn-primary" type="submit" value="Submit" required>
-            <input class="form-control" id="selectedid" name="selectedid">
+            <label for="commitmentId">Commitment ID</label>
+            <input class="form-control" id="commitmentId" name="commitmentId" required>
+            <label for="name">Name</label>
+            <input class="form-control" id="name" name="name">
+            <label for="date">Date</label>
+            <input class="form-control" id="date" name="date" type="date" >
+            <label for="time-start">Start</label>
+            <input class="form-control" id="time-start" name="timeStart" type="time" >
+            <label for="time-end">End</label>
+            <input class="form-control" id="time-end" name="timeEnd" type="time" >
+            <label for="Location">Location</label>
+            <input class="form-control" id="location" name="location" >
         </div>
+        <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 
 
