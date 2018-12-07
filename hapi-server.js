@@ -12,7 +12,7 @@ const Handlebars = require('handlebars');   // Template engine
 const knex = require("knex")({
     client: "pg",
     connection: {
-    host: "faraday.cse.taylor.edu",
+        host: "faraday.cse.taylor.edu",
         database: "jacob_haimes",
         user: "jacob_haimes",
         password: "legahajo"
@@ -31,6 +31,7 @@ const server = Hapi.server({
 });
 
 var currentMember = null;
+var memberTeams;
 
 async function init() {
     //cookies
@@ -314,12 +315,12 @@ async function init() {
 
                 knex('commitment').where('memberid', '=', currentMember)
                     .insert({
-                            memberid: currentMember,
-                            name: request.payload.name.toString(),
-                            date: request.payload.date.toString(),
-                            timestart: request.payload.timeStart.toString(),
-                            timeend: request.payload.timeEnd.toString(),
-                            location: request.payload.location.toString()
+                        memberid: currentMember,
+                        name: request.payload.name.toString(),
+                        date: request.payload.date.toString(),
+                        timestart: request.payload.timeStart.toString(),
+                        timeend: request.payload.timeEnd.toString(),
+                        location: request.payload.location.toString()
                     })
                     .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
                 //console.log("TEST");
@@ -404,6 +405,86 @@ async function init() {
             handler: async (request, h) => {
                 let messages = [];
 
+            }
+        },
+        {
+            method: 'GET',
+            path: '/teams',
+            config: {
+                description: 'Teams page'
+            },
+            handler: async (request, h) => {
+                currentMember = 1;
+                var teamList = [];
+                var teamCount;
+                var allTeams;
+                if(currentMember == null){
+                    return h.view('teams.hbs');
+                }
+                teamCount = await knex('members_teams').count('teamid').where('memberid', currentMember);
+                console.log(teamCount);
+                teamCount = parseInt(teamCount[0].count)
+                allTeams = await knex('members_teams').where('memberid', currentMember).select('teamid');
+                console.log(allTeams);
+                for(i = 0; i < teamCount; i++){
+                    teamList.push(await knex('teams').where('teamid',allTeams[i].teamid).select('teamname'));
+                    teamList[i] = teamList[i][0].teamname
+                }
+                console.log(teamList);
+                memberTeams = teamList;
+                return h.view('teams.hbs', {teams: teamList});
+            }
+        },
+        {
+            method: 'POST',
+            path: '/teams',
+            config: {
+                description: 'Handle teams request',
+                validate: {
+                    payload: {
+                        joinTeam: Joi.string().required(),
+                        leaveTeam: Joi.string().required()
+                    }
+                }
+            },
+            handler: async (request, h) => {
+                var newTeamId;
+                var teamCheck;
+                var teamToLeaveId;
+                if(!request.payload.joinTeam.match(/^Team Name$/)){
+                    if(!memberTeams.includes(request.payload.joinTeam)){
+                        teamCheck = await knex('teams')
+                            .where('teamname', request.payload.joinTeam)
+                            .select('teamid');
+                        if(typeof teamCheck[0] == "undefined") {
+                            await knex('teams').insert({teamname: request.payload.joinTeam});
+                            newTeamId = await knex('teams').where('teamname', request.payload.joinTeam).select('teamid')
+                            newTeamId = newTeamId[0].teamid;
+                            console.log(newTeamId);
+                            await knex('members_teams').insert({memberid: currentMember, teamid: newTeamId})
+                            return h.view('index', {flash: [`'${request.payload.joinTeam}' has been created!`]});
+                        }else{
+                            newTeamId = await knex('teams').where('teamname', request.payload.joinTeam).select('teamid')
+                            newTeamId = newTeamId[0].teamid;
+                            console.log(newTeamId);
+                            await knex('members_teams').insert({memberid: currentMember, teamid: newTeamId})
+                            return h.view('index', {flash: [`'${request.payload.joinTeam}' has been Joined!`]});
+                        }
+                    }else{
+                        return h.view('teams.hbs', {flash: [`You are already on '${request.payload.joinTeam}'!`]});
+                    }
+                }else if(!request.payload.leaveTeam.match(/^Team Name$/)){
+                    if(!memberTeams.includes(request.payload.leaveTeam)){
+                        return h.view('teams.hbs', {teams: memberTeams,flash: [`'${request.payload.leaveTeam}' does not exist or you haven't joined it!`]});
+                    }else{
+                        teamToLeaveId = await knex('teams').where('teamname', request.payload.leaveTeam);
+                        teamToLeaveId = teamToLeaveId[0].teamid;
+                        await knex('members_teams').where('memberid', currentMember).where('teamid', teamToLeaveId).del();
+                        return h.view('index', {flash: [`You have left '${request.payload.leaveTeam}'!`]});
+                    }
+                }else{
+                    return h.view('teams.hbs', {teams: memberTeams, flash: [`Nothing was modified!`]});
+                }
             }
         },
         {
