@@ -2,7 +2,7 @@ console.log("Loaded sign-up logic");
 
 // Define components _before_ creating the Vue object.
 Vue.component('sign-up-static-heading', {
-    template: '<h2>Fancier Sign-Up Page</h2>'
+    template: '<h2>Sign-Up Page</h2>'
 });
 
 Vue.component('log-in-static-heading', {

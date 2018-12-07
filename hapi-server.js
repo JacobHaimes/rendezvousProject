@@ -262,11 +262,13 @@ async function init() {
                         .update("name", request.payload.name)
                         .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
                 }
-                if(request.payload.date != undefined){
-                    knex('commitment')
-                        .where("commitmentid", request.payload.commitmentId)
-                        .update("date", request.payload.date)
-                        .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                if(request.payload.date != undefined ){
+                    if(request.payload.date != ""){
+                        knex('commitment')
+                            .where("commitmentid", request.payload.commitmentId)
+                            .update("date", request.payload.date)
+                            .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                    }
                 }
                 if(request.payload.start != undefined){
                     knex('commitment')
@@ -351,6 +353,7 @@ async function init() {
                 }
             },
             handler: async (request, h) => {
+                var emailCheck;
                 let messages = [];
                 if (!request.payload.email.match(/^\w+@\w+\.\w{2,}$/)) {
                     messages.push(`'${request.payload.email}' is an invalid email address`);
@@ -375,7 +378,15 @@ async function init() {
                 if (messages.length) {
                     return h.view('sign-up.hbs', {errors: messages})
                 } else {
-                    return h.view('index', {flash: ['Signed up successfully!']});
+                    emailCheck = await knex('member')
+                        .where('email', request.payload.email)
+                        .select('memberid');
+                    if(typeof emailCheck[0] != "undefined") {
+                        return h.view('sign-up.hbs', {flash: [`'${request.payload.email}' already exists!`]});
+                    }else{
+                        knex('member').insert({email: request.payload.email, password: request.payload.password}).then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                        return h.view('index', {flash: [`'${request.payload.email}' account created!`]});
+                    }
                 }
             }
         },
