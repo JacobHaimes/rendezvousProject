@@ -1,0 +1,23 @@
+<div id="add-commitment">
+    <h1>Add New Commitment</h1>
+    <h2></h2>
+    <form id="add-commitment-form" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input class="form-control" id="name" name="name">
+            <label for="date">Date</label>
+            <input class="form-control" id="date" name="date" type="date" required>
+            <label for="time-start">Start</label>
+            <input class="form-control" id="time-start" name="timeStart" type="time" required>
+            <label for="time-end">End</label>
+            <input class="form-control" id="time-end" name="timeEnd" type="time" required>
+            <label for="Location">Location</label>
+            <input class="form-control" id="location" name="location" required>
+
+        </div>
+        <input class="btn btn-primary" type="submit" value="Submit">
+        <button><a href="/commitments">Back</a></button>
+    </form>
+</div>
+
+<!--//<script src="/public/set-core-hours.js"></script>-->

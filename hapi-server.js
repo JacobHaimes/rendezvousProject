@@ -128,7 +128,7 @@ async function init() {
                     return h.view('log_in.hbs', {flash: messages})
 
                 } else {
-
+                    currentMember = memberID[0].memberid;
                     return h.view('index', {flash: ['Logged in successfully!']});
                 }
             }
@@ -140,7 +140,7 @@ async function init() {
                 description: 'Set Core Hours'
             },
             handler: async (request, h) => {
-                var memberId = "1"; //todo change to the thing it's supposed to be
+                var memberId = currentMember;
                 var reply = null;
                 await knex('member').where('memberid', memberId)
                     .select('corehoursstart','corehoursend')
@@ -158,7 +158,7 @@ async function init() {
                 description: 'Handle set core hours request',
             },
             handler: async (request, h) => {
-                var memberId = "1"; //todo change to the thing it's supposed to be
+                var memberId = currentMember;
                 knex('member').where('memberid', '=', memberId)
                     .update('corehoursstart', request.payload.coreHoursStart.toString())
                     .update('corehoursend', request.payload.coreHoursEnd.toString())
@@ -176,9 +176,16 @@ async function init() {
                 description: 'Set Core Hours'
             },
             handler: async (request, h) => {
-                var memberId = "1"; //todo change to the thing it's supposed to be
+                if(currentMember == null){
+                    return h.redirect("/log_in") //redirect to the login if you are not logged in
+                }
+                console.log("butthole" + JSON.stringify(await knex("commitment").where('memberid', currentMember)));
+                let commitmentsdata = {
 
-                return h.view('commitments.hbs');
+                };
+                var memberId = currentMember;
+                corn = await knex("commitment").where('memberid', currentMember);
+                return h.view('commitments.hbs', {data: corn});
             }
         },
         {
@@ -188,15 +195,45 @@ async function init() {
                 description: 'Handle set core hours request',
             },
             handler: async (request, h) => {
-                var memberId = "1"; //todo change to the thing it's supposed to be
-                knex('member').where('memberid', '=', memberId)
-                    .update('corehoursstart', request.payload.coreHoursStart.toString())
-                    .update('corehoursend', request.payload.coreHoursEnd.toString())
+
+            }
+        },
+        {
+            method: 'GET',
+            path: '/add-commitment',
+            config: {
+                description: 'Add new commitment'
+            },
+            handler: async (request, h) => {
+                if(currentMember == null){
+                    return h.redirect("/log_in") //redirect to the login if you are not logged in
+                }
+
+
+                return h.view('add-commitment.hbs');
+            }
+        },
+        {
+            method: 'POST',
+            path: '/add-commitment',
+            config: {
+                description: 'Add new commitment'
+            },
+            handler: async (request, h) => {
+
+                knex('commitment').where('memberid', '=', currentMember)
+                    .insert({
+                            memberid: currentMember,
+                            name: request.payload.name.toString(),
+                            date: request.payload.date.toString(),
+                            timestart: request.payload.timeStart.toString(),
+                            timeend: request.payload.timeEnd.toString(),
+                            location: request.payload.location.toString()
+                    })
                     .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
                 //console.log("TEST");
-                console.log("Start " + request.payload.coreHoursStart.toString());
-                console.log(" END " + request.payload.coreHoursEnd.toString());
-                return h.view('set-core-hours.hbs');
+                console.log("Start " + request.payload.timeStart.toString());
+                return h.view('add-commitment.hbs');
             }
         },
         {

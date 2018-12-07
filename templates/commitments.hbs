@@ -1,6 +1,28 @@
 <div id="commitments">
     <h1>View Commitments</h1>
-    <h2></h2>
+    <button><a href="/add-commitment">Add New Commitment</a></button>
+    <table style="width:100%">
+        <tr>
+            <th>Commitment ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Time Start</th>
+            <th>Time End</th>
+            <th>Location</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.commitmentid}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.date}}</td>
+            <td>{{this.timestart}}</td>
+            <td>{{this.timeend}}</td>
+            <td>{{this.location}}</td>
+        </tr>
+        {{/each}}
+    </table>
+
+
 </div>
 
 <script src="/public/set-core-hours.js"></script>
