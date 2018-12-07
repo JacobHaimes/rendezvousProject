@@ -30,6 +30,8 @@ const server = Hapi.server({
     }
 });
 
+var currentMember = null;
+
 async function init() {
     // Show routes at startup.
     await server.register(require('blipp'));
@@ -132,6 +134,7 @@ async function init() {
                 if (messages.length) {
                     return h.view('log_in.hbs', {errors: messages})
                 } else {
+
                     return h.view('index', {flash: ['Logged in successfully!']});
                 }
             }
