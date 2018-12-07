@@ -11,11 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "blipp": "^3.1.1",
+    "boom": "^7.3.0",
     "handlebars": "^4.0.12",
     "hapi": "^17.6.4",
     "hapi-pino": "^5.1.0",
     "inert": "^5.1.2",
     "joi": "^14.0.4",
+    "knex": "^0.15.2",
+    "pg": "^7.7.1",
     "vision": "^5.4.3"
   },
   "devDependencies": {},

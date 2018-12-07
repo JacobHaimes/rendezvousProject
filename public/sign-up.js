@@ -5,6 +5,10 @@ Vue.component('sign-up-static-heading', {
     template: '<h2>Fancier Sign-Up Page</h2>'
 });
 
+Vue.component('log-in-static-heading', {
+    template: '<h2>Log In Page</h2>'
+});
+
 Vue.component('instructions', {
     props: ['details'],
     template: '<p><strong>Instructions</strong>: {{ details }}</p>'

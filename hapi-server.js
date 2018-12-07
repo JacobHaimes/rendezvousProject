@@ -42,6 +42,7 @@ async function init() {
         }
     });
 
+
     // Configure templating.
     await server.register(require('vision'));
     server.views({
@@ -81,6 +82,58 @@ async function init() {
             },
             handler: async (request, h) => {
                 return h.view('log_in.hbs');
+            }
+        },
+        {
+            method: 'POST',
+            path: '/log_in',
+            config: {
+                description: 'Handle log_in request',
+                validate: {
+                    payload: {
+                        email: Joi.string().email().required(),
+                        password: Joi.string().required()
+                    }
+                }
+            },
+            handler: async (request, h) => {
+                let messages = [];
+                var emailCheck = request.payload.email;
+                let memberID = null;
+                await knex("member").where('email', emailCheck)
+                    .select('memberid')
+                    .then(member => (memberID = member));
+                console.log("test1");
+                memberID = memberID[0].memberid;
+                console.log("test1");
+
+                if (!request.payload.email.match(/^\w+@\w+\.\w{2,}$/)) {
+                    messages.push(`'${request.payload.email}' is an invalid email address`);
+                }
+
+                if (!request.payload.password.match(/[A-Z]/)) {
+                    messages.push('Password requires at least one upper-case letter');
+                }
+
+                if (!request.payload.password.match(/[a-z]/)) {
+                    messages.push('Password requires at least one lower-case letter');
+                }
+
+                if (!request.payload.password.match(/[0-9]/)) {
+                    messages.push('Password requires at least one digit');
+                }
+
+                if (request.payload.password.length < 8) {
+                    messages.push('Password must be at least eight characters long');
+                }
+
+
+
+                if (messages.length) {
+                    return h.view('log_in.hbs', {errors: messages})
+                } else {
+                    return h.view('index', {flash: ['Logged in successfully!']});
+                }
             }
         },
         {

@@ -1,6 +1,37 @@
-<h2>Welcome, Log IN</h2>
+<div id="sign-up-page">
+    <div class="row">
+        <div class="col-8">
+            <log-in-static-heading></log-in-static-heading>
 
-<div>
-    <p>Log IN</p>
+            <instructions details="Enter your email and password to Log In."></instructions>
 
+            <div v-if="errors.length">
+                <h2>There are errors on this form:</h2>
+                <error-msge
+                        v-for="(error, idx) in errors"
+                        v-bind:severity="error.severity"
+                        v-bind:msge="error.msge"
+                        v-bind:key="idx + 1">
+                </error-msge>
+            </div>
+
+            <form id="sign-up-form" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input class="form-control" id="email" name="email"
+                           type="email" placeholder="Your email address"
+                           v-model="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" id="password" name="password"
+                           type="password" placeholder="Non-trivial password"
+                           v-model="password" required>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Log In">
+            </form>
+        </div>
+    </div>
 </div>
+
+<script src="/public/sign-up.js"></script>
