@@ -179,7 +179,6 @@ async function init() {
                 if(currentMember == null){
                     return h.redirect("/log_in") //redirect to the login if you are not logged in
                 }
-                console.log("butthole" + JSON.stringify(await knex("commitment").where('memberid', currentMember)));
                 let commitmentsdata = {
 
                 };
@@ -200,6 +199,70 @@ async function init() {
         },
         {
             method: 'GET',
+            path: '/delete-commitment',
+            config: {
+                description: 'Delete Commitments'
+            },
+            handler: async (request, h) => {
+                if(currentMember == null){
+                    return h.redirect("/log_in") //redirect to the login if you are not logged in
+                }
+                var memberId = currentMember;
+                corn = await knex("commitment").where('memberid', currentMember);
+                return h.view('delete-commitment.hbs', {data: corn});
+            }
+        },
+        {
+            method: 'POST',
+            path: '/delete-commitment',
+            config: {
+                description: 'Handle set core hours request',
+            },
+            handler: async (request, h) => {
+                var memberId = currentMember;
+                console.log("sampleid" + request.payload.selectedid.toString())
+                await knex('commitment')
+                    .where('commitmentid', request.payload.selectedid .toString())
+                    .del()
+                    .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                corn = await knex("commitment").where('memberid', currentMember);
+                return h.view('delete-commitment.hbs', {data: corn});
+            }
+        },
+        {
+            method: 'GET',
+            path: '/update-commitment',
+            config: {
+                description: 'Update Commitments'
+            },
+            handler: async (request, h) => {
+                if(currentMember == null){
+                    return h.redirect("/log_in") //redirect to the login if you are not logged in
+                }
+                var memberId = currentMember;
+                corn = await knex("commitment").where('memberid', currentMember);
+                return h.view('delete-commitment.hbs', {data: corn});
+            }
+        },
+        {
+            method: 'POST',
+            path: '/update-commitment',
+            config: {
+                description: 'Update Commitments',
+            },
+            handler: async (request, h) => {
+                var memberId = currentMember;
+                console.log("sampleid" + request.payload.selectedid.toString())
+                await knex('commitment')
+                    .where('commitmentid', request.payload.selectedid .toString())
+                    .del()
+                    .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                corn = await knex("commitment").where('memberid', currentMember);
+                return h.view('delete-commitment.hbs', {data: corn});
+            }
+        },
+        {
+            method: 'GET',
             path: '/add-commitment',
             config: {
                 description: 'Add new commitment'
@@ -208,8 +271,6 @@ async function init() {
                 if(currentMember == null){
                     return h.redirect("/log_in") //redirect to the login if you are not logged in
                 }
-
-
                 return h.view('add-commitment.hbs');
             }
         },

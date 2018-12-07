@@ -1,0 +1,40 @@
+<div id="update-commitment">
+    <h1>Update Commitments</h1>
+    <button><a href="/commitments">Back</a></button>
+
+    <h2>Select ID of commitment that needs to be deleted </h2>
+    <form id="add-commitment-form" method="POST">
+        <div class="form-group">
+            <label for="selectedid">Selected ID:</label>
+            <input class="btn btn-primary" type="submit" value="Submit" required>
+            <input class="form-control" id="selectedid" name="selectedid">
+        </div>
+    </form>
+
+
+
+    <table style="width:100%">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Time Start</th>
+            <th>Time End</th>
+            <th>Location</th>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td>{{this.commitmentid}}</td>
+                <td>{{this.name}}</td>
+                <td>{{this.date}}</td>
+                <td>{{this.timestart}}</td>
+                <td>{{this.timeend}}</td>
+                <td>{{this.location}}</td>
+            </tr>
+        {{/each}}
+    </table>
+
+
+</div>
+
+<!--<script src="/public/set-core-hours.js"></script>-->
