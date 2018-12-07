@@ -99,15 +99,14 @@ async function init() {
             path: '/set-core-hours',
             config: {
                 description: 'Handle set core hours request',
-                // validate: {
-                //     payload: {
-                //         coreHoursStart: Joi.string(),
-                //         coreHoursEnd: Joi.string()
-                //     }
-                // }
             },
             handler: async (request, h) => {
-                console.log("TEST")
+                var memberId = "1"; //todo change to the thing it's supposed to be
+                knex('member').where('memberid', '=', memberId)
+                    .update('corehoursstart', request.payload.coreHoursStart.toString())
+                    .update('corehoursend', request.payload.coreHoursEnd.toString())
+                    .then(result => console.log("Problem 3:\n" + JSON.stringify(result, null, 4)));
+                //console.log("TEST");
                 console.log("Start " + request.payload.coreHoursStart.toString());
                 console.log(" END " + request.payload.coreHoursEnd.toString());
                 return h.view('set-core-hours.hbs');
