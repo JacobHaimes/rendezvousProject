@@ -425,7 +425,6 @@ async function init() {
                 description: 'Teams page'
             },
             handler: async (request, h) => {
-                currentMember = 1;
                 var teamList = [];
                 var teamCount;
                 var allTeams;
