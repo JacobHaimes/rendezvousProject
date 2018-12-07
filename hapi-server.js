@@ -30,6 +30,8 @@ const server = Hapi.server({
     }
 });
 
+var currentMember = null;
+
 async function init() {
     //cookies
     server.state('data', {
@@ -126,6 +128,7 @@ async function init() {
                     return h.view('log_in.hbs', {flash: messages})
 
                 } else {
+
                     return h.view('index', {flash: ['Logged in successfully!']});
                 }
             }
@@ -137,8 +140,15 @@ async function init() {
                 description: 'Set Core Hours'
             },
             handler: async (request, h) => {
+                var memberId = "1"; //todo change to the thing it's supposed to be
+                var reply = null;
+                await knex('member').where('memberid', memberId)
+                    .select('corehoursstart','corehoursend')
+                    .then(result => reply = result );
+                await console.log("big boi" + reply.toString());
 
-                return h.view('set-core-hours.hbs');
+                return h.view('set-core-hours.hbs', {oldcorehoursstart: reply[0].corehoursstart,
+                    oldcorehoursend: reply[0].corehoursend});
             }
         },
         {
@@ -152,7 +162,37 @@ async function init() {
                 knex('member').where('memberid', '=', memberId)
                     .update('corehoursstart', request.payload.coreHoursStart.toString())
                     .update('corehoursend', request.payload.coreHoursEnd.toString())
-                    .then(result => console.log("Problem 3:\n" + JSON.stringify(result, null, 4)));
+                    .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
+                //console.log("TEST");
+                console.log("Start " + request.payload.coreHoursStart.toString());
+                console.log(" END " + request.payload.coreHoursEnd.toString());
+                return h.view('set-core-hours.hbs');
+            }
+        },
+        {
+            method: 'GET',
+            path: '/commitments',
+            config: {
+                description: 'Set Core Hours'
+            },
+            handler: async (request, h) => {
+                var memberId = "1"; //todo change to the thing it's supposed to be
+
+                return h.view('commitments.hbs');
+            }
+        },
+        {
+            method: 'POST',
+            path: '/commitments',
+            config: {
+                description: 'Handle set core hours request',
+            },
+            handler: async (request, h) => {
+                var memberId = "1"; //todo change to the thing it's supposed to be
+                knex('member').where('memberid', '=', memberId)
+                    .update('corehoursstart', request.payload.coreHoursStart.toString())
+                    .update('corehoursend', request.payload.coreHoursEnd.toString())
+                    .then(result => console.log("Problem 2:\n" + JSON.stringify(result, null, 4)));
                 //console.log("TEST");
                 console.log("Start " + request.payload.coreHoursStart.toString());
                 console.log(" END " + request.payload.coreHoursEnd.toString());
