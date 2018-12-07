@@ -31,6 +31,15 @@ const server = Hapi.server({
 });
 
 async function init() {
+    //cookies
+    server.state('data', {
+        ttl: null,
+        isSecure: true,
+        isHttpOnly: true,
+        encoding: 'base64json',
+        clearInvalid: false, // remove invalid cookies
+        strictHeader: true, // don't allow violations of RFC 6265
+    });
     // Show routes at startup.
     await server.register(require('blipp'));
 
@@ -99,38 +108,23 @@ async function init() {
             handler: async (request, h) => {
                 let messages = [];
                 var emailCheck = request.payload.email;
-                let memberID = null;
-                await knex("member").where('email', emailCheck)
-                    .select('memberid')
-                    .then(member => (memberID = member));
-                console.log("test1");
-                memberID = memberID[0].memberid;
-                console.log("test1");
+                var passCheck = request.payload.password;
+                var memberID;
+                memberID = await knex('member')
+                    .where('email', emailCheck)
+                    .where('password', passCheck)
+                    .select('memberid');
 
-                if (!request.payload.email.match(/^\w+@\w+\.\w{2,}$/)) {
-                    messages.push(`'${request.payload.email}' is an invalid email address`);
+                if(typeof memberID[0] == "undefined"){
+                    messages.push('Email or Password is Incorrect!');
                 }
 
-                if (!request.payload.password.match(/[A-Z]/)) {
-                    messages.push('Password requires at least one upper-case letter');
-                }
-
-                if (!request.payload.password.match(/[a-z]/)) {
-                    messages.push('Password requires at least one lower-case letter');
-                }
-
-                if (!request.payload.password.match(/[0-9]/)) {
-                    messages.push('Password requires at least one digit');
-                }
-
-                if (request.payload.password.length < 8) {
-                    messages.push('Password must be at least eight characters long');
-                }
-
-
+                //prints member ID
+                //console.log(memberID[0].memberid);
 
                 if (messages.length) {
-                    return h.view('log_in.hbs', {errors: messages})
+                    return h.view('log_in.hbs', {flash: messages})
+
                 } else {
                     return h.view('index', {flash: ['Logged in successfully!']});
                 }
